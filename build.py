@@ -13,8 +13,19 @@ def read_csv(path: Path) -> tuple[list[str], list[dict[str, str]]]:
         return list(reader.fieldnames or []), list(reader)
 
 
+def parse_receita(row: dict[str, str]) -> float:
+    # Erro explícito: nunca descartar nem inventar valores não numéricos.
+    raw = row.get("receita_brl")
+    try:
+        return float(raw)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        raise ValueError(f"receita_brl não numérica: {raw!r} (linha: {row})") from None
+
+
 def join_vendas_lojas(root: Path = ROOT) -> tuple[list[str], list[dict[str, str]]]:
     vendas_cols, vendas = read_csv(root / "vendas.csv")
+    for v in vendas:
+        parse_receita(v)
     _, lojas = read_csv(root / "lojas.csv")
     lojas_by_id = {l["id_loja"]: l for l in lojas}
     # Inner join por id_loja: vendas cujo id_loja não existe em lojas.csv

@@ -14,3 +14,12 @@ Started: Fri Oct  9 22:34:19     2026
   - Build functions take `root` param and return (cols, rows) so tests can reuse them
   - Add new outputs (pivot, html) as functions called from main()
 ---
+
+## 2026-10-09 - US-002
+- Added parse_receita() (float, raises ValueError on non-numeric); join validates every venda up front
+- Files: build.py, tests/test_receita.py
+- **Learnings:**
+  - Rows stay as text for CSV output; use parse_receita(row) whenever summing revenue (pivot/html)
+  - Tests can build a tmp dir with copied CSVs and pass it as `root` to join_vendas_lojas
+  - Total after join = 931274.06
+---
