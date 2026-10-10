@@ -30,3 +30,12 @@ Started: Fri Oct  9 22:34:19     2026
 - **Learnings:**
   - Pivot values are floats; CSV written with 2 decimals. Reuse pivot_receita() for the HTML chart (US-004)
 ---
+
+## 2026-10-09 - US-004
+- Added render_html() + HTML_TEMPLATE (inline SVG stacked bars, JSON data embedded, no CDN); main() writes index.html
+- Files: build.py, tests/test_html.py, index.html
+- **Learnings:**
+  - A prior iteration had left render_html uncommitted without `import json`; check `git status` at start
+  - JS syntax verified with `node --check` on extracted script; no browser tool available, so manual browser verification of index.html is still needed
+  - Full suite: 7 tests via `python -m pytest` at root
+---

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Receita por região e mês</title>
+<style>
+body { font-family: sans-serif; margin: 2rem; }
+.legenda span { display: inline-block; margin-right: 1rem; }
+.legenda i { display: inline-block; width: 12px; height: 12px; margin-right: 4px; }
+</style>
+</head>
+<body>
+<h1>Receita por região e mês (R$)</h1>
+<svg id="grafico" width="760" height="420" role="img" aria-label="Receita por região e mês"></svg>
+<div id="legenda" class="legenda"></div>
+<script id="dados" type="application/json">{"meses": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"], "series": [{"regiao": "Centro-Oeste", "valores": {"2026-01": 44144.42, "2026-02": 48227.94, "2026-03": 41682.96, "2026-04": 38855.88, "2026-05": 46672.07, "2026-06": 38740.7}}, {"regiao": "Nordeste", "valores": {"2026-01": 46222.85, "2026-02": 48042.96, "2026-03": 45850.7, "2026-04": 44053.04, "2026-05": 35371.5, "2026-06": 42321.71}}, {"regiao": "Sudeste", "valores": {"2026-01": 44767.33, "2026-02": 48544.11, "2026-03": 35816.56, "2026-04": 46281.64, "2026-05": 41083.43, "2026-06": 48584.42}}, {"regiao": "Sul", "valores": {"2026-01": 27703.36, "2026-02": 24985.87, "2026-03": 19584.52, "2026-04": 22976.51, "2026-05": 25094.42, "2026-06": 25665.16}}]}</script>
+<script>
+const d = JSON.parse(document.getElementById("dados").textContent);
+const cores = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"];
+const svg = document.getElementById("grafico"), NS = "http://www.w3.org/2000/svg";
+const L = 80, B = 50, T = 20, W = 760 - L - 20, H = 420 - B - T;
+const totais = d.meses.map(m => d.series.reduce((s, r) => s + r.valores[m], 0));
+const max = Math.max(...totais), passo = Math.pow(10, Math.floor(Math.log10(max)));
+const topo = Math.ceil(max / passo) * passo;
+function el(n, a, t) { const e = document.createElementNS(NS, n);
+  for (const k in a) e.setAttribute(k, a[k]); if (t !== undefined) e.textContent = t;
+  svg.appendChild(e); return e; }
+for (let i = 0; i <= 5; i++) { const v = topo * i / 5, y = T + H - H * i / 5;
+  el("line", {x1: L, x2: L + W, y1: y, y2: y, stroke: "#ddd"});
+  el("text", {x: L - 6, y: y + 4, "text-anchor": "end", "font-size": 11}, Math.round(v).toLocaleString("pt-BR")); }
+const bw = W / d.meses.length;
+d.meses.forEach((m, i) => { let acc = 0;
+  d.series.forEach((s, j) => { const h = H * s.valores[m] / topo;
+    const r = el("rect", {x: L + i * bw + bw * 0.15, y: T + H - (acc + h), width: bw * 0.7, height: h, fill: cores[j % cores.length]});
+    r.appendChild(Object.assign(document.createElementNS(NS, "title"), {textContent: s.regiao + " " + m + ": R$ " + s.valores[m].toFixed(2)}));
+    acc += h; });
+  el("text", {x: L + i * bw + bw / 2, y: T + H + 18, "text-anchor": "middle", "font-size": 12}, m); });
+el("text", {x: L + W / 2, y: 415, "text-anchor": "middle", "font-size": 13}, "Mês");
+el("text", {x: 15, y: T + H / 2, "text-anchor": "middle", "font-size": 13, transform: "rotate(-90 15 " + (T + H / 2) + ")"}, "Receita (R$)");
+document.getElementById("legenda").innerHTML = d.series.map((s, j) =>
+  '<span><i style="background:' + cores[j % cores.length] + '"></i>' + s.regiao + "</span>").join("");
+</script>
+</body>
+</html>
