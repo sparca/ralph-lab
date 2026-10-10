@@ -1,0 +1,73 @@
+{
+  "project": "ralph-lab",
+  "branchName": "ralph/vendas-lojas-pivot",
+  "description": "Join vendas x lojas por id_loja, pivot de receita região x mês e index.html com gráfico de barras empilhadas, validados por pytest",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Join vendas × lojas",
+      "description": "As a analista, I want cada venda enriquecida com os dados da loja so that eu possa filtrar por região.",
+      "acceptanceCriteria": [
+        "build.py lê vendas.csv e lojas.csv (id_loja como texto) e grava vendas_lojas.csv na raiz",
+        "Inner join por id_loja: 420 linhas (as 3 vendas da loja 999 ficam de fora); comentário no script documenta isso",
+        "Colunas: as de vendas + nome_loja, regiao, uf, gerente",
+        "vendas.csv e lojas.csv não são modificados",
+        "tests/ tem teste pytest que confere o número de linhas do join (420) e a ausência de id_loja 999",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Receita total consistente",
+      "description": "As a analista, I want ter certeza de que nenhuma receita foi perdida ou duplicada no join so that os números sejam confiáveis.",
+      "acceptanceCriteria": [
+        "receita_brl é lida como número (float); valor não numérico gera erro explícito, nunca é descartado ou inventado",
+        "Soma de receita_brl em vendas_lojas.csv = soma de vendas.csv menos a soma das vendas cujo id_loja não está em lojas.csv (esperado 931274.06)",
+        "Teste pytest calcula o valor esperado a partir dos CSVs de origem (sem número fixo) e compara com tolerância de centavos",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Pivot região × mês",
+      "description": "As a analista, I want a receita por região e mês so that eu possa comparar o desempenho.",
+      "acceptanceCriteria": [
+        "build.py grava pivot_receita.csv: linhas = regiao, colunas = mês YYYY-MM (2026-01 a 2026-06), valores = soma de receita_brl",
+        "Mês derivado da coluna data; combinações sem vendas = 0",
+        "Pivot com 4 regiões × 6 meses",
+        "Soma de todas as células = receita total de vendas_lojas.csv",
+        "Teste pytest confere a forma (4, 6) e a soma das células",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Página index.html com gráfico",
+      "description": "As a usuário, I want abrir index.html e ver a receita por região e mês so that eu entenda a evolução rapidamente.",
+      "acceptanceCriteria": [
+        "build.py grava index.html autônomo (sem CDN): SVG ou canvas com JS inline e dados do pivot embutidos como JSON",
+        "Barras empilhadas: eixo X = mês, uma série por região, legenda, eixos rotulados e título em português",
+        "Teste pytest confere que o HTML contém o elemento do gráfico, uma série por região e os valores do pivot",
+        "pytest na raiz roda a suíte inteira (≥ 4 casos) sem falhas",
+        "Typecheck passes",
+        "Tests pass",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": ""
+    }
+  ]
+}
