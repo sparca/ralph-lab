@@ -23,3 +23,10 @@ Started: Fri Oct  9 22:34:19     2026
   - Tests can build a tmp dir with copied CSVs and pass it as `root` to join_vendas_lojas
   - Total after join = 931274.06
 ---
+
+## 2026-10-09 - US-003
+- Added pivot_receita(rows) -> (meses, {regiao: {mes: soma}}); main() writes pivot_receita.csv (4 regioes x 6 meses)
+- Files: build.py, tests/test_pivot.py, pivot_receita.csv
+- **Learnings:**
+  - Pivot values are floats; CSV written with 2 decimals. Reuse pivot_receita() for the HTML chart (US-004)
+---

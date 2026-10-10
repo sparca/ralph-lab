@@ -38,12 +38,30 @@ def join_vendas_lojas(root: Path = ROOT) -> tuple[list[str], list[dict[str, str]
     return vendas_cols + LOJA_COLS, rows
 
 
+def pivot_receita(
+    rows: list[dict[str, str]],
+) -> tuple[list[str], dict[str, dict[str, float]]]:
+    # Mês = primeiros 7 caracteres de data (YYYY-MM); células sem vendas = 0.
+    meses = sorted({r["data"][:7] for r in rows})
+    regioes = sorted({r["regiao"] for r in rows})
+    table = {reg: {m: 0.0 for m in meses} for reg in regioes}
+    for r in rows:
+        table[r["regiao"]][r["data"][:7]] += parse_receita(r)
+    return meses, table
+
+
 def main() -> None:
     cols, rows = join_vendas_lojas()
     with (ROOT / "vendas_lojas.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
         w.writerows(rows)
+    meses, table = pivot_receita(rows)
+    with (ROOT / "pivot_receita.csv").open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["regiao", *meses])
+        for reg, vals in table.items():
+            w.writerow([reg, *(f"{vals[m]:.2f}" for m in meses)])
 
 
 if __name__ == "__main__":
