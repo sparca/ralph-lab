@@ -1,0 +1,16 @@
+# Ralph Progress Log
+Started: Fri Oct  9 22:34:19     2026
+---
+
+## Codebase Patterns
+- Run tests from repo root with `python -m pytest`; tests import `build` via sys.path insert of the root.
+- No mypy installed; "typecheck" = `python -m py_compile build.py`.
+- csv.DictReader keeps everything as text (id_loja stays a string).
+
+## 2026-10-09 - US-001
+- build.py: join_vendas_lojas() inner join vendas x lojas, main() writes vendas_lojas.csv (420 rows)
+- Files: build.py, tests/test_join.py, vendas_lojas.csv, .gitignore
+- **Learnings:**
+  - Build functions take `root` param and return (cols, rows) so tests can reuse them
+  - Add new outputs (pivot, html) as functions called from main()
+---
